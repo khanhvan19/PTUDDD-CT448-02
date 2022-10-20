@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:myshop/ui/orders/orders_screen.dart';
+import 'package:myshop/ui/products/edit_product_screen.dart';
 
 import 'package:provider/provider.dart';
 
@@ -21,7 +22,10 @@ class MyApp extends StatelessWidget {
         ),
         ChangeNotifierProvider(
           create: (ctx) => CartManager(),
-        )
+        ),
+        ChangeNotifierProvider(
+          create: (ctx) => OrdersManager(),
+        ),
       ],
       child: MaterialApp(
         title: 'My Shop',
@@ -36,12 +40,9 @@ class MyApp extends StatelessWidget {
         ),
         home: const ProductsOverviewScreen(),
         routes: {
-          CartScreen.routeName:
-            (ctx) => const CartScreen(),
-          OrderScreen.routeName:
-            (ctx) => const OrderScreen(),
-          UserProductsScreen.routeName:
-            (ctx) => const UserProductsScreen(),
+          CartScreen.routeName: (ctx) => const CartScreen(),
+          OrderScreen.routeName: (ctx) => const OrderScreen(),
+          UserProductsScreen.routeName: (ctx) => const UserProductsScreen(),
         },
         onGenerateRoute: (settings) {
           if (settings.name == ProductDetailScreen.routeName) {
@@ -52,13 +53,25 @@ class MyApp extends StatelessWidget {
                   ctx.read<ProductManager>().findById(productId),
                 );
               },
-            );  
+            );
           }
+
+          if (settings.name == EditProductScreen.routeName) {
+            final productId = settings.arguments as String?;
+            return MaterialPageRoute(
+              builder: (ctx) {
+                return EditProductScreen(
+                  productId != null
+                  ? ctx.read<ProductManager>().findById(productId)
+                  : null,
+                );
+              },
+            );
+          }
+
           return null;
         },
       ),
     );
   }
 }
-
-
