@@ -83,7 +83,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
       if(_editedProduct.id != null) {
         productsManager.updateProduct(_editedProduct);
       } else {
-        productsManager.addProduct(_editedProduct);
+        productsManager.addProducts(_editedProduct);
       }
     } catch (error) {
       await showErrorDialog(context, 'Something went wrong.');

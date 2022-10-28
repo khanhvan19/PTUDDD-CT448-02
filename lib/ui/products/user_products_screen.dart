@@ -6,14 +6,16 @@ import 'user_product_list_tile.dart';
 import 'products_manager.dart';
 import '../shared/app_drawer.dart';
 
-
 class UserProductsScreen extends StatelessWidget {
   static const routeName = '/user-product';
   const UserProductsScreen({super.key});
 
+  Future<void> _refreshProducts(BuildContext context) async{
+    await context.read<ProductManager>().fetchProducts(true);
+  }
+
   @override
   Widget build(BuildContext context) {
-    final productsManager = ProductManager();
     return Scaffold(
       appBar: AppBar(
         title: const Text('Your Product'),
@@ -22,14 +24,24 @@ class UserProductsScreen extends StatelessWidget {
         ],
       ),
       drawer: const AppDrawer(),
-      body: RefreshIndicator(
-        onRefresh: () async => print('refresh product'),
-        child: buildUserProductListView(productsManager),
+      body: FutureBuilder(
+        future: _refreshProducts(context),
+        builder: (ctx,snapshot){
+          if(snapshot.connectionState == ConnectionState.waiting){
+            return const Center(
+              child: CircularProgressIndicator(),
+            );
+          }
+          return RefreshIndicator(
+            onRefresh:() => _refreshProducts(context),
+            child: buildUserProductListView(),
+          );
+        },
       ),
     );
   }
 
-  Widget buildUserProductListView(ProductManager productManager) {
+  Widget buildUserProductListView() {
     return Consumer<ProductManager>(
       builder: (ctx, productsManager, child) {
         return ListView.builder(
